@@ -1,0 +1,54 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&display=swap');
+
+
+*{ box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: "Plus Jakarta Sans", sans-serif;
+
+}
+.create_account_h5{
+ font-weight: 900;
+ font-size: large;
+}
+
+.text-blue-500{
+    color: blue;
+}
+
+/* styles.css */
+
+/* Page Container */
+.page_container {
+    display: flex;
+    flex-direction: column;
+    height: 100dvh; /* Full viewport height */
+    justify-content: center;
+    align-items: center;
+    overflow: hidden; /* Prevent scrollbars */
+    background: linear-gradient(270deg, #ffffff, #ebf4ff, #e6f2ff, #ffffff);
+    background-size: 400% 400%; /* Extend the gradient size for animation */
+    animation: gradientAnimation 15s infinite alternate; /* Smooth gradient movement */
+  }
+  
+  /* Keyframes for Gradient Animation */
+  @keyframes gradientAnimation {
+    0% {
+      background-position: 0% 50%;
+    }
+    100% {
+      background-position: 100% 50%;
+    }
+  }
+  
+  /* Form Container */
+  .form_container {
+    width: 100%;
+    max-width: 400px; /* Limit form width for better responsiveness */
+    padding: 1rem;
+    background: white; /* White background for the form */
+    border-radius: 12px; /* Rounded corners */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+  }
+  
+  
