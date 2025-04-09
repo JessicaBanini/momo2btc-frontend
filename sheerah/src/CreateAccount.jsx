@@ -66,13 +66,12 @@ const CreateAccount = ({ onLogin }) => {
     >
       <div className="flex items-center justify-center h-screen bg-white">
         <CardContent className="flex flex-col gap-4 p-6">
-          <Typography
-            variant="h5"
-            className="text-2xl font-bold text-center mb-4"
+          <h1
+            
             style={{ marginBottom: '1.5rem' }}
           >
-            Create Account
-          </Typography>
+            Create account
+          </h1>
 
           {/* Error Message */}
           {error && (
@@ -201,6 +200,7 @@ const CreateAccount = ({ onLogin }) => {
               marginTop: '2rem',
               backgroundColor: '#000', // Black background
               color: '#fff', // White text
+              fontWeight:'bold',
               '&:hover': {
                 backgroundColor: '#333', // Darker shade on hover
               },

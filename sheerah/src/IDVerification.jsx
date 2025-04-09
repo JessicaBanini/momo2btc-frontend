@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom'; // Import useNavigate
 import {
   Box,
   Typography,
@@ -14,6 +14,7 @@ import AccountCircle from '@mui/icons-material/AccountCircle'; // Import Account
 
 const IDVerification = () => {
   const location = useLocation();
+  const navigate = useNavigate(); // Initialize useNavigate
   const email = location.state?.email; // Get email from state
   const [tinNumber, setTinNumber] = useState('');
   const [frontImage, setFrontImage] = useState(null);
@@ -58,6 +59,8 @@ const IDVerification = () => {
 
   // Handle form submission
   const handleSubmit = () => {
+ 
+
     setError('');
 
     // Validate inputs
@@ -73,8 +76,11 @@ const IDVerification = () => {
     // Simulate backend API call
     console.log('Submitting ID verification:', { email, tinNumber, frontImage, backImage });
 
-    // Simulate success response
+    // Redirect to the Details Approved page
+    navigate('/details-approved'); // Use navigate to redirect
     setSuccess(true);
+
+    
   };
 
   return (
@@ -86,27 +92,24 @@ const IDVerification = () => {
         height: '100vh', // Full viewport height
         justifyContent: 'space-evenly',
         alignItems: 'center',
-        bgcolor: '#f9f9f9', // Light background for better contrast
-        overflowY: 'auto', // Enable vertical scrolling if content overflows
-        '-ms-overflow-style': 'none', // Hide scrollbar for IE and Edge
-        scrollbarWidth: 'none', // Hide scrollbar for Firefox
+        bgcolor: '#f9f9f9',
+        overflowY: 'auto',
+        '-ms-overflow-style': 'none',
+        scrollbarWidth: 'none',
         '&::-webkit-scrollbar': {
-          display: 'none', // Hide scrollbar for WebKit browsers
+          display: 'none',
         },
-        padding: '1rem', // Add padding for spacing
+        padding: '1rem',
+        paddingTop: '3rem',
       }}
     >
       <Box
         sx={{
-        display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'space-between',
-        width: '100%',
-        //   maxWidth: '400px',
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'space-between',
+          width: '100%',
           padding: '0.5rem',
-        //   bgcolor: 'white', // White card background
-        //   borderRadius: '12px',
-        //   boxShadow: '0px 4px 12px rgba(0, 0, 0, 0.1)', // Subtle shadow for depth
         }}
       >
         <h2 style={{ marginBottom: '2rem' }}>Verify your ID</h2>
@@ -121,7 +124,6 @@ const IDVerification = () => {
         {/* Success Message */}
         {success && (
           <Alert severity="success" sx={{ mb: 3 }}>
-            
             Verifying.....
           </Alert>
         )}
@@ -147,8 +149,8 @@ const IDVerification = () => {
         />
 
         {/* Front Image Upload */}
-        <Typography variant="subtitle3" sx={{ mb: 1, fontWeight: 'bold',color:'rgba(0, 0, 0, 0.41)' }}>
-          Upload front view of your ID 
+        <Typography variant="subtitle3" sx={{ mb: 1, fontWeight: 'bold', color: 'rgba(0, 0, 0, 0.41)' }}>
+          Upload front view of your ID
         </Typography>
         <Box
           sx={{
@@ -187,21 +189,23 @@ const IDVerification = () => {
                 >
                   <CloudUploadIcon fontSize="large" />
                 </IconButton>
-                <Typography variant="subtitle3" sx={{ color:'rgba(0, 0, 0, 0.96)',fontWeight: 'bold' }}>
-                <br/> Click to upload 
-                <span style={{fontWeight:'500',color:'rgba(0, 0, 0, 0.41)'}}> <br/> SVG, PNG, JPG (max 800x400px)</span>
+                <Typography variant="subtitle3" sx={{ color: 'rgba(0, 0, 0, 0.96)', fontWeight: 'bold' }}>
+                  <br /> Click to upload
+                  <span style={{ fontWeight: '500', color: 'rgba(0, 0, 0, 0.41)' }}>
+                    <br /> SVG, PNG, JPG (max 800x400px)
+                  </span>
                 </Typography>
               </>
             ) : (
               <p variant="subtitle3" sx={{ color: '#000', fontWeight: '500' }}>
-                {frontImage.name} uploaded 
+                {frontImage.name} uploaded
               </p>
             )}
           </label>
         </Box>
 
         {/* Back Image Upload */}
-        <Typography variant="subtitle1" sx={{ mb: 1, fontWeight: 'bold', color:'rgba(0, 0, 0, 0.41)'}}>
+        <Typography variant="subtitle1" sx={{ mb: 1, fontWeight: 'bold', color: 'rgba(0, 0, 0, 0.41)' }}>
           Upload back view of your ID
         </Typography>
         <Box
@@ -241,21 +245,22 @@ const IDVerification = () => {
                 >
                   <CloudUploadIcon fontSize="large" />
                 </IconButton>
-                <Typography variant="subtitle3" sx={{ color:'rgba(0, 0, 0, 0.96)',fontWeight: 'bold' }}>
-                  <br/>Click to upload 
-                <span style={{fontWeight:'500', color:'rgba(0, 0, 0, 0.41)'}}> <br/> SVG, PNG, JPG (max 800x400px)</span>
+                <Typography variant="subtitle3" sx={{ color: 'rgba(0, 0, 0, 0.96)', fontWeight: 'bold' }}>
+                  <br /> Click to upload
+                  <span style={{ fontWeight: '500', color: 'rgba(0, 0, 0, 0.41)' }}>
+                    <br /> SVG, PNG, JPG (max 800x400px)
+                  </span>
                 </Typography>
               </>
             ) : (
-              <Typography variant="subtitle3" sx={{ fontWeight:'500',color: '#000'}}>
-                {backImage.name} uploaded 
+              <Typography variant="subtitle3" sx={{ fontWeight: '500', color: '#000' }}>
+                {backImage.name} uploaded
               </Typography>
             )}
           </label>
         </Box>
 
-            </Box>
-            {/* Submit Button */}
+        {/* Submit Button */}
         <Button
           onClick={handleSubmit}
           variant="contained"
@@ -263,19 +268,19 @@ const IDVerification = () => {
           size="large"
           disabled={success}
           sx={{
+            fontWeight: 'bold',
             textTransform: 'none',
-            margin:"1rem",
+            // margin: '1rem',
             backgroundColor: '#000',
             color: '#fff',
             '&:hover': {
               backgroundColor: '#333',
-             
             },
           }}
         >
           Submit
         </Button>
-  
+      </Box>
     </Box>
   );
 };

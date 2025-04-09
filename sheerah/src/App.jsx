@@ -6,6 +6,8 @@ import Login from './Login';
 import CreateAccount from './CreateAccount';
 import VerifyEmail from './VerifyEmail'; // OTP verification page
 import IDVerification from './IDVerification'; // ID verification page
+import DetailsApproved from './DetailsApproved'; // Details Approved page
+import HomePage from './HomePage'; // Homepage with tabs
 import './App.css';
 
 export default function App() {
@@ -20,6 +22,7 @@ export default function App() {
   }, []);
 
   return (
+    
     <Router>
       <AnimatePresence mode="wait">
         {!showLogin ? (
@@ -89,6 +92,36 @@ export default function App() {
                   transition={{ duration: 0.5 }}
                 >
                   <IDVerification />
+                </motion.div>
+              }
+            />
+
+            {/* Details Approved Page */}
+            <Route
+              path="/details-approved"
+              element={
+                <motion.div
+                  key="details-approved"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ duration: 0.5 }}
+                >
+                  <DetailsApproved />
+                </motion.div>
+              }
+            />
+
+            {/* Homepage */}
+            <Route
+              path="/homepage"
+              element={
+                <motion.div
+                  key="homepage"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ duration: 0.5 }}
+                >
+                  <HomePage />
                 </motion.div>
               }
             />

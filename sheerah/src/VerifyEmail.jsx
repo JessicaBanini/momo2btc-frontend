@@ -120,7 +120,7 @@ const VerifyEmail = () => {
         {/* Success Message */}
         {success && (
           <Alert severity="success" sx={{ mb: 2 }}>
-            Email verified successfully! 
+            Email verified! 
             {/* Redirecting... */}
           </Alert>
         )}
@@ -163,7 +163,9 @@ const VerifyEmail = () => {
           fullWidth
           size="large"
           disabled={success} // Disable button after successful verification
-          sx={{
+          sx={{ 
+            fontWeight:'bold',
+            textTransform: 'none',
             backgroundColor: '#000',
             color: '#fff',
             '&:hover': {
