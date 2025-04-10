@@ -236,7 +236,40 @@ const HomePage = () => {
           }}
           sx={{ '& .MuiInputBase-input': { textAlign: 'right' }, mb: 2 }}
         />
-
+<form
+  action="https://checkout.paystack.com"
+  method="POST"
+  target="_blank"
+>
+  {/* Hidden fields for Paystack */}
+  <input
+    type="hidden"
+    name="public_key"
+    value="pk_test_30ed210458796159b9e71cc36040a0894c2c2d62" // Your public key
+  />
+  <input
+    type="hidden"
+    name="amount"
+    value={ghsAmount ? parseFloat(ghsAmount) * 100 : 0} // Convert GHS to pesewas
+  />
+  <input
+    type="hidden"
+    name="currency"
+    value="GHS"
+  />
+  <input
+    type="hidden"
+    name="email"
+    value="emybrown620@gmail.com" // Replace with user's email
+  />
+  <input
+    type="hidden"
+    name="metadata"
+    value={JSON.stringify({
+      crypto: currency,
+      cryptoAmount: cryptoAmount,
+    })}
+  />
 
 <Button
   variant="contained"
@@ -270,7 +303,7 @@ const HomePage = () => {
 >
   Buy Now
 </Button>
-{/* </form> */}
+</form>
       </>
     )}
   </>
