@@ -89,18 +89,18 @@ const IDVerification = () => {
       sx={{
         display: 'flex',
         flexDirection: 'column',
-        height: '100vh', // Full viewport height
+        height: '100dvh', // Full viewport height
         justifyContent: 'space-evenly',
         alignItems: 'center',
         bgcolor: '#f9f9f9',
-        overflowY: 'auto',
+        // overflowY: 'auto',
         '-ms-overflow-style': 'none',
         scrollbarWidth: 'none',
         '&::-webkit-scrollbar': {
           display: 'none',
         },
         padding: '1rem',
-        paddingTop: '3rem',
+        // paddingTop: '3rem',
       }}
     >
       <Box

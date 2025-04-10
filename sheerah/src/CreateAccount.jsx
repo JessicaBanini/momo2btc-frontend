@@ -62,6 +62,7 @@ const CreateAccount = ({ onLogin }) => {
         height: '100dvh',
         padding: '0rem 0.5rem 0rem 0.5rem',
         justifyContent: 'center',
+        overflow:'hidden'
       }}
     >
       <div className="flex items-center justify-center h-screen bg-white">

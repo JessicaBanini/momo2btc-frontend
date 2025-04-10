@@ -15,7 +15,7 @@ const Loading = ({ onComplete }) => {
         clearInterval(interval);
         setTimeout(() => {
           onComplete();
-        }, 2000);
+        }, 1500);
       }
     }, 100);
 

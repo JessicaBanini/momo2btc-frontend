@@ -5,6 +5,7 @@
     margin: 0;
     padding: 0;
     font-family: "Plus Jakarta Sans", sans-serif;
+    /* overflow: hidden; */
 
 }
 .create_account_h5{
@@ -25,10 +26,12 @@
     height: 100dvh; /* Full viewport height */
     justify-content: center;
     align-items: center;
+    
     overflow: hidden; /* Prevent scrollbars */
     background: linear-gradient(270deg, #ffffff, #ebf4ff, #e6f2ff, #ffffff);
     background-size: 400% 400%; /* Extend the gradient size for animation */
     animation: gradientAnimation 15s infinite alternate; /* Smooth gradient movement */
+
   }
   
   /* Keyframes for Gradient Animation */

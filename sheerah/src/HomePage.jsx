@@ -21,40 +21,44 @@ const HomePage = () => {
     SOL: 'solana',
   };
 
-  // Define stablecoins for decimal formatting
-  const STABLECOINS = ['USDT']; // Add other stablecoins if needed
+  // Stablecoins for decimal formatting
+  const STABLECOINS = ['USDT'];
 
-  // Fixed USD-to-GHS conversion rate (1 USD = 14 GHS)
-  const USD_TO_GHS_RATE = 14;
-
-  // Fetch USD rates and convert to GHS
+  // Fetch exchange rates (USD → GHS + Crypto USD Prices)
   const fetchExchangeRates = async () => {
     try {
-      const response = await axios.get(
-        'https://api.coingecko.com/api/v3/simple/price', // Base URL
+      // 1. Fetch real-time USD/GHS rate
+      const usdGhsResponse = await axios.get(
+        'https://v6.exchangerate-api.com/v6/d2d701c69f46320aa5541250/latest/USD'
+      );
+      const usdToGhsRate = usdGhsResponse.data.conversion_rates.GHS;
+
+      // 2. Fetch crypto prices in USD
+      const cryptoResponse = await axios.get(
+        'https://api.coingecko.com/api/v3/simple/price',
         {
           params: {
-            ids: Object.values(CURRENCY_ID_MAP).join(','), // Dynamically include ALL coins
+            ids: Object.values(CURRENCY_ID_MAP).join(','),
             vs_currencies: 'usd',
           },
           headers: {
             accept: 'application/json',
-            'x-cg-demo-api-key': 'CG-QCfvYJ9H2S3aak9BPFBJ6mF5', // Your API key
+            'x-cg-demo-api-key': 'CG-QCfvYJ9H2S3aak9BPFBJ6mF5', // Your Coingecko API key
           },
         }
       );
-      const usdRates = response.data;
+      const usdRates = cryptoResponse.data;
 
-      // Convert USD rates to GHS
+      // 3. Convert crypto USD rates to GHS
       const convertedRates = Object.keys(usdRates).reduce((acc, crypto) => {
-        acc[crypto] = { ghs: usdRates[crypto].usd * USD_TO_GHS_RATE };
+        acc[crypto] = { ghs: usdRates[crypto].usd * usdToGhsRate };
         return acc;
       }, {});
 
       setExchangeRates(convertedRates);
     } catch (err) {
       console.error('Error fetching exchange rates:', err);
-      setError('Failed to fetch exchange rates. Please try again later.');
+      setError('Failed to fetch real-time rates. Please try again later.');
     } finally {
       setLoading(false);
     }
@@ -62,15 +66,15 @@ const HomePage = () => {
 
   // Calculate crypto amount
   const cryptoAmount = useMemo(() => {
-    const apiId = CURRENCY_ID_MAP[currency]; // Map ticker to API ID
+    const apiId = CURRENCY_ID_MAP[currency];
     if (!ghsAmount || !apiId || !exchangeRates[apiId]?.ghs) return '0.00';
 
     const rate = exchangeRates[apiId].ghs;
-    const decimals = STABLECOINS.includes(currency) ? 2 : 8; // 2 decimals for stablecoins
+    const decimals = STABLECOINS.includes(currency) ? 2 : 8;
     return (parseFloat(ghsAmount) / rate).toFixed(decimals);
   }, [ghsAmount, currency, exchangeRates]);
 
-  // Fetch rates on mount
+  // Fetch data on mount
   useEffect(() => {
     fetchExchangeRates();
   }, []);
@@ -196,7 +200,7 @@ const HomePage = () => {
                             },
                           }}
                         >
-                          {/* All Cryptocurrencies */}
+                          {/* Cryptocurrencies */}
                           <MenuItem value="BTC">
                             <Box sx={{ display: 'flex', alignItems: 'center' }}>
                               <img
@@ -270,11 +274,6 @@ const HomePage = () => {
                         </Select>
                       </InputAdornment>
                     ),
-                    // endAdornment: (
-                    //   <InputAdornment position="end">
-                    //     {cryptoAmount} {currency}
-                    //   </InputAdornment>
-                    // ),
                   }}
                   sx={{ '& .MuiInputBase-input': { textAlign: 'right' } }}
                 />
@@ -283,7 +282,6 @@ const HomePage = () => {
           </>
         )}
 
-        {/* Sell and History Tabs */}
         {value === 1 && <Typography>Sell functionality coming soon...</Typography>}
         {value === 2 && <Typography>Transaction history will appear here</Typography>}
       </Box>

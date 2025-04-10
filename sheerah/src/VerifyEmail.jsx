@@ -92,6 +92,7 @@ const VerifyEmail = () => {
         height: '100dvh',
         justifyContent: 'center',
         alignItems: 'center',
+        
       }}
     >
       <Box

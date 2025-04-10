@@ -14,7 +14,7 @@ const DetailsApproved = () => {
   useEffect(() => {
     const timer = setTimeout(() => {
       navigate('/homepage'); // Redirect to the homepage after 3 seconds
-    }, 3000); // 3 seconds delay
+    }, 1800); // 
 
     return () => clearTimeout(timer); // Cleanup the timer
   }, [navigate]);
