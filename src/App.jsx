@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { BrowserRouter as Router, Routes, Route, useNavigate } from 'react-router-dom';
+import {HashRouter as Router, Routes, Route, useNavigate } from 'react-router-dom';
 import Loading from './Loading';
 import Login from './Login';
 import CreateAccount from './CreateAccount';
