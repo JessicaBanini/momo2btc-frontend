@@ -337,10 +337,11 @@ const HomePage = () => {
                 )}
 
                 <Button
+                  onClick={handleBuyNow}
                   variant="contained"
                   fullWidth
                   disabled={!ghsAmount || !currency || loading}
-                  onClick={() => alert('Payment initiated')}
+                  // onClick={() => alert('Payment initiated')}
                   sx={{
                     mb: 2,
                     bgcolor: 'black',
