@@ -2,25 +2,26 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom'; // Import useNavigate for navigation
 import { CardContent, TextField, Button, Typography, InputAdornment, Alert } from '@mui/material';
 import { AccountCircle, Phone, Email, Lock } from '@mui/icons-material';
+import axios from 'axios'; // Import axios for API calls
 
 const CreateAccount = ({ onLogin }) => {
   const [credentials, setCredentials] = useState({
-    fullname: '',
+    full_name: '',
     phone: '',
     email: '',
     password: '',
-    confirmPassword: '',
+    confirm_password: '',
   });
 
   const [error, setError] = useState(''); // Error message state
   const navigate = useNavigate(); // Initialize useNavigate
 
   // Handle form submission
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     // Validate form fields
-    if (!credentials.fullname.trim()) {
+    if (!credentials.full_name.trim()) {
       setError('Please enter your full name.');
       return;
     }
@@ -40,17 +41,37 @@ const CreateAccount = ({ onLogin }) => {
       return;
     }
 
-    if (credentials.password !== credentials.confirmPassword) {
+    if (credentials.password !== credentials.confirm_password) {
       setError('Passwords do not match.');
       return;
     }
 
-    // Simulate account creation logic (e.g., API call)
-    console.log('Creating account with:', credentials);
+    try {
 
-    // Redirect to the OTP verification page
-    setError(''); // Clear error message
-    navigate('/verify-email', { state: { email: credentials.email } }); // Pass email to OTP page
+      const response = await axios.post('http://18.212.60.150/accounts/api/signup/', {
+        fullname: credentials.full_name,
+        phone: credentials.phone,
+        email: credentials.email,
+        password: credentials.password,
+      });
+
+      console.log('API Response:', response.data);
+
+      // Clear error message
+      setError('');
+
+      // Redirect to the OTP verification page
+      navigate('/verify-email', { state: { email: credentials.email } }); // Pass email to OTP page
+    } catch (err) {
+      console.error('Error during signup:', err);
+
+      // Display error message from the backend or a generic message
+      if (err.response && err.response.data && err.response.data.message) {
+        setError(err.response.data.message);
+      } else {
+        setError('An error occurred while creating your account. Please try again later.');
+      }
+    }
   };
 
   return (
@@ -62,17 +83,12 @@ const CreateAccount = ({ onLogin }) => {
         height: '100dvh',
         padding: '0rem 0.5rem 0rem 0.5rem',
         justifyContent: 'center',
-        overflow:'hidden'
+        overflow: 'hidden',
       }}
     >
       <div className="flex items-center justify-center h-screen bg-white">
         <CardContent className="flex flex-col gap-4 p-6">
-          <h1
-            
-            style={{ marginBottom: '1.5rem' }}
-          >
-            Create account
-          </h1>
+          <h1 style={{ marginBottom: '1.5rem' }}>Create account</h1>
 
           {/* Error Message */}
           {error && (
@@ -89,10 +105,10 @@ const CreateAccount = ({ onLogin }) => {
               variant="outlined"
               fullWidth
               required
-              placeholder='John Doe'
+              placeholder="John Doe"
               sx={{ mb: 3 }}
-              value={credentials.fullname}
-              onChange={(e) => setCredentials({ ...credentials, fullname: e.target.value })}
+              value={credentials.full_name}
+              onChange={(e) => setCredentials({ ...credentials, full_name: e.target.value })}
               InputProps={{
                 startAdornment: (
                   <InputAdornment position="start">
@@ -109,7 +125,7 @@ const CreateAccount = ({ onLogin }) => {
               variant="outlined"
               fullWidth
               required
-              placeholder='0564785963'
+              placeholder="0564785963"
               sx={{ mb: 3 }}
               value={credentials.phone}
               onChange={(e) => {
@@ -135,7 +151,7 @@ const CreateAccount = ({ onLogin }) => {
               variant="outlined"
               fullWidth
               required
-              placeholder='johndoe@gmail.com'
+              placeholder="johndoe@gmail.com"
               sx={{ mb: 3 }}
               value={credentials.email}
               onChange={(e) => setCredentials({ ...credentials, email: e.target.value })}
@@ -170,14 +186,13 @@ const CreateAccount = ({ onLogin }) => {
             {/* Confirm Password Field */}
             <TextField
               label="Confirm Password"
-              placeholder=''
               type="password"
               variant="outlined"
               fullWidth
               required
               sx={{ mb: 3 }}
-              value={credentials.confirmPassword}
-              onChange={(e) => setCredentials({ ...credentials, confirmPassword: e.target.value })}
+              value={credentials.confirm_password}
+              onChange={(e) => setCredentials({ ...credentials, confirm_password: e.target.value })}
               InputProps={{
                 startAdornment: (
                   <InputAdornment position="start">
@@ -201,7 +216,7 @@ const CreateAccount = ({ onLogin }) => {
               marginTop: '2rem',
               backgroundColor: '#000', // Black background
               color: '#fff', // White text
-              fontWeight:'bold',
+              fontWeight: 'bold',
               '&:hover': {
                 backgroundColor: '#333', // Darker shade on hover
               },

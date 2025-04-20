@@ -13,12 +13,14 @@
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.0",
     "@mui/icons-material": "^7.0.1",
+    "@mui/joy": "^5.0.0-beta.52",
     "@mui/material": "^7.0.1",
     "axios": "^1.8.4",
     "framer-motion": "^12.6.3",
     "notistack": "^3.0.2",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
+    "react-paystack": "^6.0.0",
     "react-router-dom": "^6.30.0"
   },
   "devDependencies": {

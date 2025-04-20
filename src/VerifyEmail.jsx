@@ -104,10 +104,10 @@ const VerifyEmail = () => {
           borderRadius: '12px',
         }}
       >
-        <Typography variant="h5" align="center" gutterBottom>
+        <Typography variant="h4" align="center" gutterBottom fontWeight='600'>
           Verify Your Email
         </Typography>
-        <Typography variant="body1" align="center" sx={{ mb: 3, mt: 2 }}>
+        <Typography variant="body2" align="center" sx={{ mb: 2, mt: 2 }}>
           Enter the code sent to your email address.
         </Typography>
 

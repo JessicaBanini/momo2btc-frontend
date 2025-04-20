@@ -1,6 +1,17 @@
 import { useState, useEffect, useMemo } from 'react';
-import { Box, Typography, Tabs, Tab, TextField, Select, MenuItem, InputAdornment, Alert, Button, List, ListItem, ListItemText } from '@mui/material';
+import { Box, Typography,  TextField, Select, MenuItem, InputAdornment, Alert, Button, List, ListItem, ListItemText } from '@mui/material';
 import axios from 'axios';
+import { useLocation, useNavigate } from 'react-router-dom';
+import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
+// 
+
+import Tabs from '@mui/joy/Tabs';
+import TabList from '@mui/joy/TabList';
+import Tab, { tabClasses } from '@mui/joy/Tab';
+import TabPanel from '@mui/joy/TabPanel';
+
+import { PaystackButton } from 'react-paystack'; // Import PaystackButton
+
 
 const HomePage = () => {
   const [value, setValue] = useState(0);
@@ -12,6 +23,21 @@ const HomePage = () => {
   const [sellCryptoAmount, setSellCryptoAmount] = useState('');
   const [sellGhsAmount, setSellGhsAmount] = useState('');
   const [transactions, setTransactions] = useState([]);
+  const navigate = useNavigate();
+
+  // const publicKey = "pk_test_30ed210458796159b9e71cc36040a0894c2c2d62";
+  // const [ email, setEmail ] = useState("");
+  // const [phoneNumber, setPhoneNumber] = useState("");
+  // const [showPhoneField, setShowPhoneField] = useState(false); 
+
+
+
+
+  // const validatePhoneNumber = (number) => {
+  //   const phoneRegex = /^[0-9]{10,15}$/; // Validate 10-15 digits
+  //   return phoneRegex.test(number);
+  // };
+ 
 
   const CURRENCY_ID_MAP = {
     BTC: 'bitcoin',
@@ -79,43 +105,454 @@ const HomePage = () => {
   };
 
   // Simulate Transaction
+ 
+  // const paystackConfig = useMemo(() => {
+  //   const metadata = {
+  //     crypto: currency,
+  //     cryptoAmount: cryptoAmount,
+  //     user: email, 
+  //   };
+  //   return {
+  //     reference: `SHEERAH-${new Date().getTime()}`, // Unique transaction reference
+  //     email: email, // 
+  //     amount: parseFloat(ghsAmount) * 100 || 0, // Convert GHS to pesewas
+  //     currency: 'GHS',
+  //     publicKey: 'pk_test_30ed210458796159b9e71cc36040a0894c2c2d62',
+  //     metadata: JSON.stringify(metadata),
+  //   };
+  // }, [currency, ghsAmount, cryptoAmount]);
+
+
   const handleBuyNow = () => {
-    const transaction = {
-      id: transactions.length + 1,
-      type: 'Buy',
-      crypto: currency,
-      amount: cryptoAmount,
-      ghs: ghsAmount,
-      timestamp: new Date().toLocaleString(),
-    };
-    setTransactions([...transactions, transaction]);
-    alert(`Payment for ${cryptoAmount} ${currency} initiated via Paystack`);
+    if (!ghsAmount || !currency) {
+      setError('Please enter a valid GHS amount and select a cryptocurrency.');
+      return;
+    }
+    navigate('/payment', {
+      state: {
+        ghsAmount,
+        currency,
+      },
+    });
   };
 
+
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'column', height: '100vh', padding: '1rem', bgcolor: '#f9f9f9', paddingTop: '2rem', justifyContent: 'center', alignItems: 'center' }}>
+    
+
+    <Box sx={{ display: 'flex', flexDirection: 'column', height: '100dvh', padding: '1rem', bgcolor: '#f9f9f9', paddingTop: '0rem', justifyContent: 'center', alignItems: 'center' }}>
       <Typography variant="h4" sx={{ color: '#333', fontWeight: 'bold', mb: 3 }}>
         Sheerah<span style={{ color: 'blue' }}>Trade</span>
       </Typography>
-      <Tabs value={value} onChange={(_, newValue) => setValue(newValue)} centered sx={{ mb: 3, '& .MuiTab-root': { textTransform: 'none', fontWeight: 'bold' }, '& .MuiTabs-indicator': { bgcolor: 'blue' } }}>
+      {error && (
+        <Alert severity="error" sx={{ mb: 3, width: '100%', maxWidth: '500px' }}>
+          {error}
+        </Alert>
+      )}
+      <Tabs
+        value={value}
+        variant="outlined"
+        onChange={(_, newValue) => setValue(newValue)}
+        aria-label="Cryptocurrency Actions"
+        defaultValue={0}
+        sx={{
+          width: '100%',
+          maxWidth: '500px',
+          borderRadius: 'lg',
+          boxShadow: 'sm',
+          overflow: 'auto',
+          minHeight:'50dvh'
+        }}
+      >
+       <TabList
+          disableUnderline
+          tabFlex={1}
+          sx={{
+            [`& .${tabClasses.root}`]: {
+              fontSize: '0.9rem',
+              fontWeight: '700',
+              [`&[aria-selected="true"]`]: {
+                color: 'black',
+                bgcolor: 'background.surface',
+                minHeight:'3rem'
+              },
+              [`&.${Tab.focusVisible}`]: {
+                outlineOffset: '-4px',
+              },
+            },
+          }}
+          >
+          <Tab disableIndicator variant="soft" sx={{ flexGrow: 1 }}>
+            Buy
+          </Tab>
+          <Tab disableIndicator variant="soft" sx={{ flexGrow: 1 }}>
+            Sell
+          </Tab>
+          <Tab disableIndicator variant="soft" sx={{ flexGrow: 1 }}>
+            Transactions
+          </Tab>
+        </TabList>
+
+        <TabPanel value={0}>
+          <Typography variant="h6" sx={{ fontWeight: 'bold', color: '#333', mb: 3,}}>
+            Buy Crypto
+          </Typography>
+          {loading ? (
+            <Typography>Loading exchange rates...</Typography>
+          ) : (
+            <>
+              {/* GHS Input Field */}
+              <TextField
+                label="GHS Amount"
+                type="number"
+                fullWidth
+                value={ghsAmount}
+                onChange={(e) => {
+                  const amount = e.target.value;
+                  if (isNaN(amount) || amount < 0) setError('Invalid GHS amount');
+                  else { setError(null); setGhsAmount(amount); }
+                }}
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <img
+                        src="https://img.icons8.com/color/48/ghana.png"
+                        alt="Ghana Flag"
+                        style={{ width: '24px', marginRight: '8px' }}
+                      />
+                      GHS
+                    </InputAdornment>
+                  ),
+                }}
+                sx={{ mb: 3, '& .MuiInputBase-input': { textAlign: 'right' } }}
+                inputProps={{ min: 0 }}        
+                />
+
+              {/* Crypto Input Field */}
+              <TextField
+                label="Receive"
+                fullWidth
+                value={cryptoAmount}
+                InputProps={{
+                  readOnly: true,
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <Select
+                        value={currency}
+                        onChange={(e) => setCurrency(e.target.value)}
+                        sx={{
+                          minWidth: '120px',
+                          '& .MuiOutlinedInput-notchedOutline': { border: 'none' },
+                          '& .MuiSelect-icon': { display: 'none'},
+                        }}
+                        MenuProps={{
+                          PaperProps: {
+                            sx: { border: 'none', boxShadow: 'none', mt: 1 },
+                          },
+                        }}
+                        IconComponent={KeyboardArrowDownIcon} // Add down arrow icon
+                      >
+                        {/* Cryptocurrencies */}
+                        <MenuItem value="BTC">
+                          <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                            <img
+                              src="https://img.icons8.com/color/48/bitcoin.png"
+                              alt="Bitcoin"
+                              style={{ width: '25px', marginRight: '8px' , marginLeft: '-11px'}}
+                            />
+                            BTC
+                          </Box>
+                        </MenuItem>
+                        <MenuItem value="ETH">
+                          <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                            <img
+                              src="https://img.icons8.com/color/48/ethereum.png"
+                              alt="Ethereum"
+                              style={{ width: '25px', marginRight: '8px' , marginLeft: '-11px'}}
+                            />
+                            ETH
+                          </Box>
+                        </MenuItem>
+                        <MenuItem value="USDT">
+                        <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                          <img
+                              src="https://img.icons8.com/?size=100&id=U8V97McJaXmr&format=png&color=000000"
+                              alt="USDT"
+                              style={{ width: '25px', marginRight: '8px' , marginLeft: '-11px'}}
+                          />
+                          USDT
+                        </Box>
+                       </MenuItem>
+                       <MenuItem value="LTC">
+                        <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                          <img
+                              src="https://img.icons8.com/?size=100&id=4ASuE77zHw4s&format=png&color=000000"
+                              alt="LTC"
+                              style={{ width: '25px', marginRight: '8px' , marginLeft: '-11px'}}
+                          />
+                          LTC
+                        </Box>
+                      </MenuItem>
+                      <MenuItem value="XRP">
+                      <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                        <img
+                            src="https://img.icons8.com/?size=100&id=OSofAdTFAZ8L&format=png&color=000000"
+                            alt="XRP"
+                            style={{ width: '25px', marginRight: '8px' , marginLeft: '-11px'}}
+                            />
+                        XRP
+                      </Box>
+                      </MenuItem>
+                      <MenuItem value="ADA">
+                      <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                        <img
+                            src="https://img.icons8.com/?size=100&id=xnZMZXqLEDk1&format=png&color=000000"
+                            alt="ADA"
+                            style={{ width: '25px', marginRight: '8px' , marginLeft: '-11px'}}
+                            />
+                        ADA
+                      </Box>
+                      </MenuItem>
+                      <MenuItem value="SOL">
+                      <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                        <img
+                            src="https://img.icons8.com/?size=100&id=icTiMgoOHSVy&format=png&color=000000"
+                            alt="SOL"
+                            style={{ width: '25px', marginRight: '8px' , marginLeft: '-11px'}}
+                            />
+                        SOL
+                      </Box>
+                      </MenuItem>
+                      </Select>
+                    </InputAdornment>
+                  ),
+                }}
+                sx={{'& .MuiInputBase-input': { textAlign: 'right' }, mb: 3 }}
+              />
+
+                {ghsAmount > 0 && (             
+                <Typography  sx={{ mt: 3, color: 'text.secondary', mb: 2 , textAlign:'center' ,fontSize:'0.75rem'}}>
+                  0.5% transaction fee will be applied
+                </Typography>
+                )}
+
+                <Button
+                  variant="contained"
+                  fullWidth
+                  disabled={!ghsAmount || !currency || loading}
+                  onClick={() => alert('Payment initiated')}
+                  sx={{
+                    mb: 2,
+                    bgcolor: 'black',
+                    textTransform: 'none',
+                    color: 'white',
+                    '&:hover': { bgcolor: '#0056b3' },
+                  }}
+                >
+                  Buy Now
+                </Button>
+            </>
+          )}
+        </TabPanel>
+
+        {/* Other tabs */}
+        <TabPanel value={1}>
+
+        <Typography variant="h6" sx={{ fontWeight: 'bold', color: '#333', mb: 3 }}>Sell Crypto</Typography>
+            {loading ? <Typography variant='success'>Loading rates...</Typography> : (
+              <>
+                <TextField
+                  label="Crypto Amount"
+                  type="number"
+                  fullWidth
+                  value={sellCryptoAmount}
+                  onChange={handleSellCryptoChange}
+                  InputProps={{
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        <Select
+                          value={currency}
+                          onChange={(e) => setCurrency(e.target.value)}
+                          sx={{ minWidth: '120px', '& .MuiOutlinedInput-notchedOutline': { border: 'none' }, '& .MuiSelect-icon': { display: 'none' } }}
+                          MenuProps={{ PaperProps: { sx: { border: 'none', boxShadow: 'none', mt: 1 } } }}
+                        >
+                          <MenuItem value="BTC">
+                          <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                            <img
+                              src="https://img.icons8.com/color/48/bitcoin.png"
+                              alt="Bitcoin"
+                              style={{ width: '25px', marginRight: '8px' , marginLeft: '-11px'}}
+                            />
+                            BTC
+                          </Box>
+                        </MenuItem>
+                        <MenuItem value="ETH">
+                          <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                            <img
+                              src="https://img.icons8.com/color/48/ethereum.png"
+                              alt="Ethereum"
+                              style={{ width: '25px', marginRight: '8px' , marginLeft: '-11px'}}
+                            />
+                            ETH
+                          </Box>
+                        </MenuItem>
+                        <MenuItem value="USDT">
+                        <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                          <img
+                              src="https://img.icons8.com/?size=100&id=U8V97McJaXmr&format=png&color=000000"
+                              alt="USDT"
+                              style={{ width: '25px', marginRight: '8px' , marginLeft: '-11px'}}
+                          />
+                          USDT
+                        </Box>
+                       </MenuItem>
+                       <MenuItem value="LTC">
+                        <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                          <img
+                              src="https://img.icons8.com/?size=100&id=4ASuE77zHw4s&format=png&color=000000"
+                              alt="LTC"
+                              style={{ width: '25px', marginRight: '8px' , marginLeft: '-11px'}}
+                          />
+                          LTC
+                        </Box>
+                      </MenuItem>
+                      <MenuItem value="XRP">
+                      <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                        <img
+                            src="https://img.icons8.com/?size=100&id=OSofAdTFAZ8L&format=png&color=000000"
+                            alt="XRP"
+                            style={{ width: '25px', marginRight: '8px' , marginLeft: '-11px'}}
+                            />
+                        XRP
+                      </Box>
+                      </MenuItem>
+                      <MenuItem value="ADA">
+                      <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                        <img
+                            src="https://img.icons8.com/?size=100&id=xnZMZXqLEDk1&format=png&color=000000"
+                            alt="ADA"
+                            style={{ width: '25px', marginRight: '8px' , marginLeft: '-11px'}}
+                            />
+                        ADA
+                      </Box>
+                      </MenuItem>
+                      <MenuItem value="SOL">
+                      <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                        <img
+                            src="https://img.icons8.com/?size=100&id=icTiMgoOHSVy&format=png&color=000000"
+                            alt="SOL"
+                            style={{ width: '25px', marginRight: '8px' , marginLeft: '-11px'}}
+                            />
+                        SOL
+                      </Box>
+                      </MenuItem>
+                        </Select>
+                      </InputAdornment>
+                    ),
+                  }}
+                  sx={{ mb: 3, '& .MuiInputBase-input': { textAlign: 'right' } }}
+                  inputProps={{ min: 0 }}
+                />
+                <TextField
+                  label="Withdraw"
+                  fullWidth
+                  value={sellGhsAmount}
+                  InputProps={{
+                    readOnly: true,
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        <img src="https://img.icons8.com/color/48/ghana.png" style={{ width: '24px', marginRight: '8px' }} alt="Ghana Flag" />
+                        GHS
+                      </InputAdornment>
+                    ),
+                  }}
+                  sx={{ '& .MuiInputBase-input': { textAlign: 'right', } , mb: 3}}
+
+                  
+                />
+                {sellCryptoAmount > 0 && (             
+                <Typography  sx={{ mt: 3, color: 'text.secondary', mb: 2 , textAlign:'center' ,fontSize:'0.75rem'}}>
+                  0.5% transaction fee will be applied
+                </Typography>
+                )}
+
+                <Button
+                  variant="contained"
+                  fullWidth
+                  disabled={!sellCryptoAmount || !currency || loading}
+                  onClick={() => alert('Payment initiated')}
+                  sx={{
+                    // mt: 3,
+                    mb: 2,
+                    bgcolor: 'black',
+                    textTransform: 'none',
+                    color: 'white',
+                    '&:hover': { bgcolor: '#0056b3' },
+                  }}
+                >
+                  Withdraw
+                </Button>
+              </>
+            )}
+
+
+        </TabPanel>
+        <TabPanel value={2}>
+
+        <Box sx={{ maxHeight: '400px', overflowY: 'auto' }}>
+            {/* <Typography variant="h6" sx={{ fontWeight: 'bold', color: '#333', mb: 3 }}>Transaction History</Typography> */}
+            {transactions.length === 0 ? (
+              <Typography  sx={{ mt: 11, color: 'text.secondary', mb: 2 , textAlign:'center'}}>No transactions yet</Typography>
+            ) : (
+              <List>
+                {transactions.map((tx) => (
+                  <ListItem key={tx.id} sx={{ bgcolor: '#f0f0f0', mb: 1, borderRadius: '8px' }}>
+                    <ListItemText
+                      primary={`${tx.type} ${tx.amount} ${tx.crypto}`}
+                      secondary={`GHS ${tx.ghs} • ${tx.timestamp}`}
+                    />
+                  </ListItem>
+                ))}
+              </List>
+            )}
+          </Box>
+
+
+        </TabPanel>
+
+        
+
+
+
+
+       </Tabs>
+
+
+
+
+
+
+
+
+      {/* <Tabs value={value} onChange={(_, newValue) => setValue(newValue)} centered sx={{ mb: 3 , '& .MuiTab-root': { textTransform: 'none', fontWeight: 'bold' }, '& .MuiTabs-indicator': { bgcolor: 'blue' } }}>
         <Tab label="Buy" />
         <Tab label="Sell" />
         <Tab label="Transaction History" />
       </Tabs>
       {error && <Alert severity="error" sx={{ mb: 3, width: '100%', maxWidth: '500px' }}>{error}</Alert>}
-      <Box sx={{ flexGrow: 1, p: 3, bgcolor: 'white', borderRadius: '12px', boxShadow: '0 4px 12px rgba(0,0,0,0.1)', width: '100%', maxWidth: '500px' }}>
+      <Box sx={{ flexGrow: 1, p: 3, bgcolor: 'white', borderRadius: '12px', boxShadow: '0 4px 12px rgba(0,0,0,0.1)', width: '100%', maxWidth: '500px' }}> */}
 
-{value === 0 && (
+{/* {value === 0 && (
   <>
     <Typography variant="h6" sx={{ fontWeight: 'bold', color: '#333', mb: 3 }}>
       Buy Cryptocurrency
     </Typography>
     {loading ? (
       <Typography>Loading exchange rates...</Typography>
-    ) : (
+    ) : ( */}
       <>
         {/* GHS Input Field */}
-        <TextField
+        {/* <TextField
           label="GHS Amount"
           type="number"
           fullWidth
@@ -139,9 +576,9 @@ const HomePage = () => {
           }}
           sx={{ mb: 3, '& .MuiInputBase-input': { textAlign: 'right' } }}
           inputProps={{ min: 0 }}
-        />
+        /> */}
         {/* Crypto Input Field */}
-        <TextField
+        {/* <TextField
           label="Receive"
           fullWidth
           value={cryptoAmount}
@@ -158,9 +595,9 @@ const HomePage = () => {
                     '& .MuiSelect-icon': { display: 'none' },
                   }}
                   MenuProps={{ PaperProps: { sx: { border: 'none', boxShadow: 'none', mt: 1 } } }}
-                >
+                > */}
                   {/* Valid Crypto Icons */}
-                  <MenuItem value="BTC">
+                  {/* <MenuItem value="BTC">
                     <Box sx={{ display: 'flex', alignItems: 'center' }}>
                       <img
                           src="https://img.icons8.com/color/48/bitcoin.png"
@@ -235,47 +672,33 @@ const HomePage = () => {
             ),
           }}
           sx={{ '& .MuiInputBase-input': { textAlign: 'right' }, mb: 2 }}
-        />
+        /> */}
 
 
-<Button
-  variant="contained"
-  fullWidth
-  sx={{ bgcolor: 'blue', color: 'white', mt: 2, '&:hover': { bgcolor: '#0056b3' } }}
-  disabled={!ghsAmount || !cryptoAmount || error}
-  onClick={() => {
-    if (!ghsAmount || !currency) return;
+      {/* <Button
+        variant="contained"
+        onClick={handleBuyNow}
+        fullWidth
+        sx={{ bgcolor: 'blue', color: 'white', '&:hover': { bgcolor: '#0056b3' } }}
+      >
+        Buy Now
+      </Button> */}
 
-    // Initialize Paystack checkout
-    const handler = window.PaystackCheckout.configure({
-      key: 'pk_test_30ed210458796159b9e71cc36040a0894c2c2d62', // Your public key
-      email: 'emybrown620@gmail.com', // Replace with user's email
-      amount: parseFloat(ghsAmount) * 100, // Convert GHS to pesewas
-      currency: 'GHS',
-      metadata: {
-        crypto: currency,
-        cryptoAmount: cryptoAmount,
-      },
-      callback: (response) => {
-        // Handle successful payment
-        console.log('Payment successful:', response);
-        alert('Payment successful! Transaction reference: ' + response.reference);
-      },
-      onClose: () => {
-        alert('Payment window closed.');
-      },
-    });
-    handler.openIframe();
-  }}
->
-  Buy Now
-</Button>
-{/* </form> */}
-      </>
-    )}
-  </>
-)}
-        {value === 1 && (
+
+
+
+
+
+
+    
+
+         
+
+       </>
+    {/* )} */}
+  {/* </> */}
+{/* )} */}
+        {/* {value === 1 && (
           <>
             <Typography variant="h6" sx={{ fontWeight: 'bold', color: '#333', mb: 3 }}>Sell Cryptocurrency</Typography>
             {loading ? <Typography>Loading rates...</Typography> : (
@@ -346,9 +769,11 @@ const HomePage = () => {
             )}
           </Box>
         )}
-      </Box>
+      </Box> */}
     </Box>
+
   );
 };
+
 
 export default HomePage;

@@ -4,6 +4,7 @@ import { BrowserRouter as Router, Routes, Route, useNavigate } from 'react-route
 import Loading from './Loading';
 import Login from './Login';
 import CreateAccount from './CreateAccount';
+import PaymentPage from './PaymentPage';
 import VerifyEmail from './VerifyEmail'; // OTP verification page
 import IDVerification from './IDVerification'; // ID verification page
 import DetailsApproved from './DetailsApproved'; // Details Approved page
@@ -122,6 +123,20 @@ export default function App() {
                   transition={{ duration: 0.5 }}
                 >
                   <HomePage />
+                </motion.div>
+              }
+            />
+            {/* Homepage */}
+            <Route
+              path="/payment"
+              element={
+                <motion.div
+                  key="payment"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ duration: 0.5 }}
+                >
+                  <PaymentPage />
                 </motion.div>
               }
             />
