@@ -25,6 +25,11 @@ const CreateAccount = ({ onLogin }) => {
       return;
     }
 
+    if (!/^[a-zA-Z\s]*$/.test(credentials.fullname)) {
+      setError('Name can only contain letters and spaces.');
+      return;
+    }
+
     if (!/^\d{10}$/.test(credentials.phone)) {
       setError('Phone number must contain exactly 10 digits.');
       return;
