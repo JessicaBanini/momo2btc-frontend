@@ -491,7 +491,7 @@ const HomePage = () => {
                     '&:hover': { bgcolor: '#0056b3' },
                   }}
                 >
-                  Withdraw
+                  Withdraw Money
                 </Button>
               </>
             )}
