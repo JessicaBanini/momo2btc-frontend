@@ -148,7 +148,7 @@ const Login = ({ onLogin }) => {
             }}
           >
             Don't have an account?{' '}
-            <Link to="/create-account">Sign up</Link>
+            <Link to="/create-account">Sign in</Link>
           </Typography>
         </CardContent>
       </Box>
