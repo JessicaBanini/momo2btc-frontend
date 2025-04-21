@@ -161,7 +161,7 @@ const HomePage = () => {
           borderRadius: 'lg',
           boxShadow: 'sm',
           overflow: 'auto',
-          minHeight:'50dvh'
+          // minHeight:'50dvh'
         }}
       >
        <TabList
@@ -503,7 +503,7 @@ const HomePage = () => {
         <Box sx={{ maxHeight: '400px', overflowY: 'auto' }}>
             {/* <Typography variant="h6" sx={{ fontWeight: 'bold', color: '#333', mb: 3 }}>Transaction History</Typography> */}
             {transactions.length === 0 ? (
-              <Typography  sx={{ mt: 11, color: 'text.secondary', mb: 2 , textAlign:'center'}}>No transactions yet</Typography>
+              <Typography  sx={{ justifyContent:'center', color: 'text.secondary', mb: 2 , textAlign:'center'}}>No transactions yet</Typography>
             ) : (
               <List>
                 {transactions.map((tx) => (

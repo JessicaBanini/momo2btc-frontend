@@ -10,7 +10,7 @@ import {
 } from '@mui/material';
 
 const VerifyEmail = () => {
-  const [otp, setOtp] = useState(Array(4).fill('')); // Array of 4 empty strings
+  const [otp, setOtp] = useState(Array(6).fill('')); // Array of 4 empty strings
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
   const [resendDisabled, setResendDisabled] = useState(true);
@@ -51,7 +51,7 @@ const VerifyEmail = () => {
 
     // Combine OTP digits into a single string
     const fullOtp = newOtp.join('');
-    if (fullOtp.length === 4) {
+    if (fullOtp.length === 6) {
       handleSubmit(fullOtp);
     }
   };
@@ -61,7 +61,7 @@ const VerifyEmail = () => {
     setError(''); // Reset error message
 
     // Example: Simulate a valid OTP (e.g., "1234")
-    if (enteredOtp === '1234') {
+    if (enteredOtp === '123456') {
       setSuccess(true);
       setError('');
 
@@ -147,7 +147,7 @@ const VerifyEmail = () => {
               onFocus={(e) => e.target.select()} // Select text on focus
               inputRef={(el) => (inputRefs.current[index] = el)} // Assign ref
               sx={{
-                width: '58px',
+                width: '45px',
                 height: '58px',
                 '& .MuiOutlinedInput-root': {
                   borderRadius: '8px',

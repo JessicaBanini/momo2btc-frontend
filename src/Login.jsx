@@ -127,7 +127,7 @@ const Login = ({ onLogin }) => {
               },
             }}
           >
-            Login
+           Sign In
           </Button>
 
           {/* Don't have an account? Sign up */}
@@ -148,7 +148,7 @@ const Login = ({ onLogin }) => {
             }}
           >
             Don't have an account?{' '}
-            <Link to="/create-account">Sign in</Link>
+            <Link to="/create-account">Sign Up</Link>
           </Typography>
         </CardContent>
       </Box>
