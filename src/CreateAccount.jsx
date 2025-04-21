@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom'; // Import useNavigate for navigation
+import { useNavigate, Link } from 'react-router-dom'; // Import useNavigate for navigation
 import {Box, CardContent, TextField, Button, Typography, InputAdornment, Alert } from '@mui/material';
 import { AccountCircle, Phone, Email, Lock } from '@mui/icons-material';
 
@@ -163,6 +163,7 @@ const CreateAccount = ({ onLogin }) => {
               type="password"
               variant="outlined"
               fullWidth
+              placeholder="******"
               required
               sx={{ mb: 3 }}
               value={credentials.password}
@@ -179,7 +180,7 @@ const CreateAccount = ({ onLogin }) => {
             {/* Confirm Password Field */}
             <TextField
               label="Confirm Password"
-              placeholder=''
+              placeholder="******"
               type="password"
               variant="outlined"
               fullWidth
@@ -206,9 +207,8 @@ const CreateAccount = ({ onLogin }) => {
             fullWidth
             required
             sx={{
-              
               textTransform: 'none',
-              marginTop: '2rem',
+              marginTop: '1rem',
               backgroundColor: '#000', // Black background
               color: '#fff', // White text
               fontWeight:'bold',
@@ -219,6 +219,31 @@ const CreateAccount = ({ onLogin }) => {
           >
             Sign Up
           </Button>
+
+          <Typography
+          variant='body2'
+          sx={{
+              mt: 2,
+              textAlign: 'center',
+              color: 'rgba(0, 0, 0, 0.6)',
+              '& a': {
+                color: 'blue',
+                fontWeight: 'bold',
+                textDecoration: 'none',
+                '&:hover': {
+                  textDecoration: 'underline',
+                },
+              },
+            }} 
+          >
+            Already have an account?{' '}
+            <Link to="/">Sign in</Link>
+
+
+          </Typography>
+            
+
+          
         </CardContent>
       </Box>
     </Box>
