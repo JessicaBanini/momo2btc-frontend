@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom'; // Import useNavigate for navigation
-import { CardContent, TextField, Button, Typography, InputAdornment, Alert } from '@mui/material';
+import {Box, CardContent, TextField, Button, Typography, InputAdornment, Alert } from '@mui/material';
 import { AccountCircle, Phone, Email, Lock } from '@mui/icons-material';
+
 
 const CreateAccount = ({ onLogin }) => {
   const [credentials, setCredentials] = useState({
@@ -23,7 +24,7 @@ const CreateAccount = ({ onLogin }) => {
     if (!credentials.fullname.trim()) {
       setError('Please enter your full name.');
       return;
-    }
+    }   
 
     if (!/^[a-zA-Z\s]*$/.test(credentials.fullname)) {
       setError('Name can only contain letters and spaces.');
@@ -59,7 +60,7 @@ const CreateAccount = ({ onLogin }) => {
   };
 
   return (
-    <div
+    <Box
       className="page_container"
       style={{
         display: 'flex',
@@ -67,10 +68,13 @@ const CreateAccount = ({ onLogin }) => {
         height: '100dvh',
         padding: '0rem 0.5rem 0rem 0.5rem',
         justifyContent: 'center',
-        overflow:'hidden'
+        overflow:'hidden',
+        alignItems:'center',
+        // border:'3px solid blue'
+        
       }}
     >
-      <div className="flex items-center justify-center h-screen bg-white">
+      <Box className="flex items-center justify-center h-screen bg-white">
         <CardContent className="flex flex-col gap-4 p-6">
           <h1
             
@@ -202,6 +206,7 @@ const CreateAccount = ({ onLogin }) => {
             fullWidth
             required
             sx={{
+              
               textTransform: 'none',
               marginTop: '2rem',
               backgroundColor: '#000', // Black background
@@ -215,8 +220,8 @@ const CreateAccount = ({ onLogin }) => {
             Sign Up
           </Button>
         </CardContent>
-      </div>
-    </div>
+      </Box>
+    </Box>
   );
 };
 

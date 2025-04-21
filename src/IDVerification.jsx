@@ -135,9 +135,20 @@ const IDVerification = () => {
           variant="outlined"
           fullWidth
           required
-          placeholder="GHA-720004-6"
+          placeholder="GHA-720000047-6"
           value={tinNumber}
-          onChange={(e) => setTinNumber(e.target.value)}
+          onChange={(e) => {
+            const inputValue = e.target.value.toUpperCase(); // Convert to uppercase
+            setTinNumber(inputValue);
+          }}
+          onBlur={() => {
+            const tinRegex = /^GHA-\d{9}-\d$/;
+            if (!tinRegex.test(tinNumber)) {
+              setError('Invalid ID number. Please follow the format GHA-720002964-0.');
+            } else {
+              setError('');
+            }
+          }}  
           sx={{ mb: 3 }}
           InputProps={{
             startAdornment: (
@@ -268,6 +279,7 @@ const IDVerification = () => {
           size="large"
           disabled={success}
           sx={{
+            mt:'3',
             fontWeight: 'bold',
             textTransform: 'none',
             // margin: '1rem',
