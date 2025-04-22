@@ -1,15 +1,8 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom'; // Import useNavigate and Link for navigation
-import {
-  Box,
-  CardContent,
-  TextField,
-  Button,
-  Typography,
-  InputAdornment,
-  Alert,
-} from '@mui/material';
-import { AccountCircle, Phone, Email, Lock, LogoutOutlined } from '@mui/icons-material';
+import { Box, CardContent, TextField, Button, Typography, InputAdornment, Alert } from '@mui/material';
+import { Email, Lock } from '@mui/icons-material';
+import axios from 'axios'; // For making API calls
 
 const Login = ({ onLogin }) => {
   const [credentials, setCredentials] = useState({
@@ -18,10 +11,11 @@ const Login = ({ onLogin }) => {
   });
 
   const [error, setError] = useState(''); // Error message state
+  const [loading, setLoading] = useState(false); // Loading state for API call
   const navigate = useNavigate(); // Initialize useNavigate
 
   // Handle form submission
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     // Validate form fields
@@ -35,12 +29,31 @@ const Login = ({ onLogin }) => {
       return;
     }
 
-    // Simulate login logic (e.g., API call)
-    console.log('Logging in with:', credentials);
+    try {
+      setError(''); // Clear previous errors
+      setLoading(true); 
 
-    // Redirect to the OTP verification page
-    setError(''); // Clear error message
-    navigate('/homepage', { state: { email: credentials.email } }); // Pass email to OTP page
+      // Make POST request to the backend API
+      const response = await axios.post('http://13.51.167.118/accounts/api/login', {
+        email: credentials.email,
+        password: credentials.password,
+      });
+      // Handle successful login
+      console.log('Login successful:', response.data);
+      setLoading(false); // Reset loading state
+
+      // Redirect to the homepage or dashboard
+      navigate('/homepage', { state: { email: credentials.email } });
+    } catch (err) {
+      setLoading(false); // Reset loading state
+
+      // Handle API errors
+      if (err.response && err.response.status === 400) {
+        setError('Invalid email or password.');
+      } else {
+        setError('An error occurred. Please try again later.');
+      }
+    }
   };
 
   return (
@@ -116,18 +129,18 @@ const Login = ({ onLogin }) => {
             variant="contained"
             size="large"
             fullWidth
-            required
+            disabled={loading} // Disable button while loading
             sx={{
               textTransform: 'none',
-              backgroundColor: '#000', // Black background
-              color: '#fff', // White text
+              backgroundColor: '#000', 
+              color: '#fff', 
               fontWeight: 'bold',
               '&:hover': {
-                backgroundColor: '#333', // Darker shade on hover
+                backgroundColor: '#333', 
               },
             }}
           >
-           Sign In
+            {loading ? 'Signing In...' : 'Sign In'}
           </Button>
 
           {/* Don't have an account? Sign up */}

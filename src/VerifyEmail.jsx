@@ -10,7 +10,7 @@ import {
 } from '@mui/material';
 
 const VerifyEmail = () => {
-  const [otp, setOtp] = useState(Array(6).fill('')); // Array of 4 empty strings
+  const [otp, setOtp] = useState(Array(6).fill('')); // Array of 6 empty strings
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
   const [resendDisabled, setResendDisabled] = useState(true);
@@ -60,7 +60,7 @@ const VerifyEmail = () => {
   const handleSubmit = (enteredOtp) => {
     setError(''); // Reset error message
 
-    // Example: Simulate a valid OTP (e.g., "1234")
+    // Example: Simulate a valid OTP (e.g., "123456")
     if (enteredOtp === '123456') {
       setSuccess(true);
       setError('');
@@ -144,8 +144,8 @@ const VerifyEmail = () => {
               }}
               value={digit}
               onChange={(e) => handleInputChange(index, e.target.value)}
-              onFocus={(e) => e.target.select()} // Select text on focus
-              inputRef={(el) => (inputRefs.current[index] = el)} // Assign ref
+              onFocus={(e) => e.target.select()} 
+              inputRef={(el) => (inputRefs.current[index] = el)}
               sx={{
                 width: '45px',
                 height: '58px',

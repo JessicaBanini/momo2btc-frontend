@@ -1,62 +1,100 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom'; // Import useNavigate for navigation
-import {Box, CardContent, TextField, Button, Typography, InputAdornment, Alert } from '@mui/material';
+import { Box, CardContent, TextField, Button, Typography, InputAdornment, Alert } from '@mui/material';
 import { AccountCircle, Phone, Email, Lock } from '@mui/icons-material';
+import axios from 'axios'; // For making API calls
 
-
-const CreateAccount = ({ onLogin }) => {
+const CreateAccount = () => {
   const [credentials, setCredentials] = useState({
-    fullname: '',
+    full_name: '',
     phone: '',
     email: '',
     password: '',
-    confirmPassword: '',
+    confirm_password: '',
   });
 
   const [error, setError] = useState(''); // Error message state
+  const [loading, setLoading] = useState(false); // Loading state for API call
   const navigate = useNavigate(); // Initialize useNavigate
 
   // Handle form submission
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Validate form fields
-    if (!credentials.fullname.trim()) {
-      setError('Please enter your full name.');
-      return;
-    }   
+    // Reset error and loading states
+    setError('');
+    setLoading(true);
 
-    if (!/^[a-zA-Z\s]*$/.test(credentials.fullname)) {
+    // Validate form fields
+    if (!credentials.full_name.trim()) {
+      setError('Please enter your full name.');
+      setLoading(false);
+      return;
+    }
+
+    if (!/^[a-zA-Z\s]*$/.test(credentials.full_name)) {
       setError('Name can only contain letters and spaces.');
+      setLoading(false);
       return;
     }
 
     if (!/^\d{10}$/.test(credentials.phone)) {
       setError('Phone number must contain exactly 10 digits.');
+      setLoading(false);
       return;
     }
 
     if (!credentials.email.trim() || !/\S+@\S+\.\S+/.test(credentials.email)) {
       setError('Please enter a valid email address.');
+      setLoading(false);
       return;
     }
 
     if (!credentials.password.trim() || credentials.password.length < 6) {
       setError('Password must be at least 6 characters long.');
+      setLoading(false);
       return;
     }
 
-    if (credentials.password !== credentials.confirmPassword) {
+    if (credentials.password !== credentials.confirm_password) {
       setError('Passwords do not match.');
+      setLoading(false);
       return;
     }
 
-    // Simulate account creation logic (e.g., API call)
-    console.log('Creating account with:', credentials);
+    try {
+      // Make POST request to the backend API
+      const response = await axios.post('http://13.51.167.118/accounts/api/signup', {
+        name: credentials.full_name,
+        phone: credentials.phone,
+        email: credentials.email,
+        password: credentials.password,
+      });
 
-    // Redirect to the OTP verification page
-    setError(''); // Clear error message
-    navigate('/verify-email', { state: { email: credentials.email } }); // Pass email to OTP page
+      console.log('Account created successfully:', response.data);
+
+      // Redirect to the OTP verification page
+      navigate('/verify-email', { state: { email: credentials.email } }); // Pass email to OTP page
+    } catch (err) {
+      console.error('Error during account creation:', err);
+
+      if (err.response) {
+        // Log the full error response for debugging
+        console.error('Backend error response:', err.response.data);
+
+        if (err.response.status === 400) {
+          setError('Invalid input. Please check your details and try again.');
+        } else if (err.response.status === 409) {
+          setError('An account with this email already exists.');
+        } else {
+          setError('An unexpected error occurred. Please try again later.');
+        }
+      } else {
+        setError('Unable to connect to the server. Please check your internet connection.');
+      }
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -68,20 +106,13 @@ const CreateAccount = ({ onLogin }) => {
         height: '100dvh',
         padding: '0rem 0.5rem 0rem 0.5rem',
         justifyContent: 'center',
-        overflow:'hidden',
-        alignItems:'center',
-        // border:'3px solid blue'
-        
+        overflow: 'hidden',
+        alignItems: 'center',
       }}
     >
       <Box className="flex items-center justify-center h-screen bg-white">
         <CardContent className="flex flex-col gap-4 p-6">
-          <h1
-            
-            style={{ marginBottom: '1.5rem' }}
-          >
-            Create account
-          </h1>
+          <h1 style={{ marginBottom: '1.5rem' }}>Create account</h1>
 
           {/* Error Message */}
           {error && (
@@ -98,10 +129,10 @@ const CreateAccount = ({ onLogin }) => {
               variant="outlined"
               fullWidth
               required
-              placeholder='John Doe'
+              placeholder="John Doe"
               sx={{ mb: 3 }}
               value={credentials.fullname}
-              onChange={(e) => setCredentials({ ...credentials, fullname: e.target.value })}
+              onChange={(e) => setCredentials({ ...credentials, full_name: e.target.value })}
               InputProps={{
                 startAdornment: (
                   <InputAdornment position="start">
@@ -118,7 +149,7 @@ const CreateAccount = ({ onLogin }) => {
               variant="outlined"
               fullWidth
               required
-              placeholder='0564785963'
+              placeholder="0564785963"
               sx={{ mb: 3 }}
               value={credentials.phone}
               onChange={(e) => {
@@ -144,7 +175,7 @@ const CreateAccount = ({ onLogin }) => {
               variant="outlined"
               fullWidth
               required
-              placeholder='johndoe@gmail.com'
+              placeholder="johndoe@gmail.com"
               sx={{ mb: 3 }}
               value={credentials.email}
               onChange={(e) => setCredentials({ ...credentials, email: e.target.value })}
@@ -187,7 +218,7 @@ const CreateAccount = ({ onLogin }) => {
               required
               sx={{ mb: 3 }}
               value={credentials.confirmPassword}
-              onChange={(e) => setCredentials({ ...credentials, confirmPassword: e.target.value })}
+              onChange={(e) => setCredentials({ ...credentials, confirm_password: e.target.value })}
               InputProps={{
                 startAdornment: (
                   <InputAdornment position="start">
@@ -205,24 +236,24 @@ const CreateAccount = ({ onLogin }) => {
             variant="contained"
             size="large"
             fullWidth
-            required
+            disabled={loading} // Disable button while loading
             sx={{
               textTransform: 'none',
               marginTop: '1rem',
-              backgroundColor: '#000', // Black background
-              color: '#fff', // White text
-              fontWeight:'bold',
+              backgroundColor: '#000', 
+              color: '#fff', 
+              fontWeight: 'bold',
               '&:hover': {
-                backgroundColor: '#333', // Darker shade on hover
+                backgroundColor: '#333', 
               },
             }}
           >
-            Sign Up
+            {loading ? 'Signing Up...' : 'Sign Up'}
           </Button>
 
           <Typography
-          variant='body2'
-          sx={{
+            variant="body2"
+            sx={{
               mt: 2,
               textAlign: 'center',
               color: 'rgba(0, 0, 0, 0.6)',
@@ -234,16 +265,11 @@ const CreateAccount = ({ onLogin }) => {
                   textDecoration: 'underline',
                 },
               },
-            }} 
+            }}
           >
             Already have an account?{' '}
             <Link to="/">Sign in</Link>
-
-
           </Typography>
-            
-
-          
         </CardContent>
       </Box>
     </Box>

@@ -14,7 +14,7 @@ const PaymentPage = () => {
 
   // Validate phone number
   const validatePhoneNumber = (number) => {
-    const phoneRegex = /^[0-9]{10}$/; // Basic validation for 10-15 digits
+    const phoneRegex = /^[0-9]{10}$/; // Basic validation for 10-
     return phoneRegex.test(number);
   };
 
