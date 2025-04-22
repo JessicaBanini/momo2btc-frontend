@@ -1,13 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom'; // Import useNavigate for navigation
-import {
-  Box,
-  Typography,
-  TextField,
-  Button,
-  Alert,
-  Link,
-} from '@mui/material';
+import { Box, Typography, TextField, Button, Alert, Link } from '@mui/material';
+import axios from 'axios'; // For making API calls
 
 const VerifyEmail = () => {
   const [otp, setOtp] = useState(Array(6).fill('')); // Array of 6 empty strings
@@ -17,6 +11,7 @@ const VerifyEmail = () => {
   const [countdown, setCountdown] = useState(60); // Countdown timer (60 seconds)
   const inputRefs = useRef([]); // Refs for all input fields
   const navigate = useNavigate(); // Initialize useNavigate
+  const email = new URLSearchParams(window.location.search).get('email'); // Extract email from query parameters
 
   // Initialize refs dynamically
   useEffect(() => {
@@ -56,31 +51,68 @@ const VerifyEmail = () => {
     }
   };
 
-  // Simulate backend verification logic
-  const handleSubmit = (enteredOtp) => {
+  // Submit OTP to backend API
+  const handleSubmit = async (enteredOtp) => {
     setError(''); // Reset error message
+    setSuccess(false);
 
-    // Example: Simulate a valid OTP (e.g., "123456")
-    if (enteredOtp === '123456') {
+    try {
+      // Make POST request to the backend API
+      const response = await axios.post('http://13.51.167.118/accounts/api/verify-otp', {
+        email: email, // Pass the email from query parameters
+        otp: enteredOtp, // Pass the entered OTP
+      });
+
+      console.log('OTP verified successfully:', response.data);
+
+      // Mark as successful and navigate to the ID Verification page
       setSuccess(true);
-      setError('');
-
-      // Navigate to the ID Verification page after a short delay
       setTimeout(() => {
         navigate('/id-verification'); // Redirect to the ID Verification page
       }, 1000); // Optional delay for better UX
-    } else {
-      setError('Invalid verification code. Please try again.');
-      setSuccess(false);
+    } catch (err) {
+      console.error('Error verifying OTP:', err);
+
+      if (err.response) {
+        // Log the full error response for debugging
+        console.error('Backend error response:', err.response.data);
+
+        if (err.response.status === 400) {
+          setError('Invalid verification code. Please try again.');
+        } else if (err.response.status === 404) {
+          setError('Email not found. Please sign up or try again.');
+        } else {
+          setError('An unexpected error occurred. Please try again later.');
+        }
+      } else {
+        setError('Unable to connect to the server. Please check your internet connection.');
+      }
     }
   };
 
   // Simulate resending the verification code
-  const handleResendCode = () => {
+  const handleResendCode = async () => {
     setError('');
-    setCountdown(30); // Reset countdown
+    setCountdown(60); // Reset countdown
     setResendDisabled(true); // Disable resend button again
-    console.log('Verification code resent!');
+
+    try {
+      // Make POST request to resend OTP
+      const response = await axios.post('http://13.51.167.118/accounts/api/resend-otp', {
+        email: email, // Pass the email from query parameters
+      });
+
+      console.log('Verification code resent successfully:', response.data);
+    } catch (err) {
+      console.error('Error resending OTP:', err);
+
+      if (err.response) {
+        console.error('Backend error response:', err.response.data);
+        setError('Failed to resend verification code. Please try again later.');
+      } else {
+        setError('Unable to connect to the server. Please check your internet connection.');
+      }
+    }
   };
 
   return (
@@ -92,7 +124,6 @@ const VerifyEmail = () => {
         height: '100dvh',
         justifyContent: 'center',
         alignItems: 'center',
-        
       }}
     >
       <Box
@@ -104,7 +135,7 @@ const VerifyEmail = () => {
           borderRadius: '12px',
         }}
       >
-        <Typography variant="h4" align="center" gutterBottom fontWeight='600'>
+        <Typography variant="h4" align="center" gutterBottom fontWeight="600">
           Verify Your Email
         </Typography>
         <Typography variant="body2" align="center" sx={{ mb: 2, mt: 2 }}>
@@ -121,8 +152,7 @@ const VerifyEmail = () => {
         {/* Success Message */}
         {success && (
           <Alert severity="success" sx={{ mb: 2 }}>
-            Email verified! 
-            {/* Redirecting... */}
+            Email verified!
           </Alert>
         )}
 
@@ -144,7 +174,7 @@ const VerifyEmail = () => {
               }}
               value={digit}
               onChange={(e) => handleInputChange(index, e.target.value)}
-              onFocus={(e) => e.target.select()} 
+              onFocus={(e) => e.target.select()}
               inputRef={(el) => (inputRefs.current[index] = el)}
               sx={{
                 width: '45px',
@@ -164,8 +194,8 @@ const VerifyEmail = () => {
           fullWidth
           size="large"
           disabled={success} // Disable button after successful verification
-          sx={{ 
-            fontWeight:'bold',
+          sx={{
+            fontWeight: 'bold',
             textTransform: 'none',
             backgroundColor: '#000',
             color: '#fff',
